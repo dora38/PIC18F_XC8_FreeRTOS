@@ -42,6 +42,12 @@
 */
 
 #include "mcc_generated_files/mcc.h"
+#include "FreeRTOS.h"
+#include "task.h"
+#include "flash.h"
+#include "partest.h"
+
+extern void vInitializeDemo( void );
 
 /*
                          Main application
@@ -67,10 +73,28 @@ void main(void)
     // Disable low priority global interrupts.
     //INTERRUPT_GlobalInterruptLowDisable();
 
+    vInitializeDemo();
+    vTaskStartScheduler();
+
     while (1)
     {
         // Add your application code
     }
+}
+
+void vInitializeDemo( void )
+{
+    vParTestInitialise();
+
+    /* LED Flashing demo. */
+    vStartLEDFlashTasks( tskIDLE_PRIORITY + 1 );
+}
+
+void vApplicationIdleHook( void )
+{
+    /* Enter sleep mode. */
+    SLEEP();
+    NOP();
 }
 /**
  End of File
